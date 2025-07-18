@@ -182,29 +182,29 @@ const PeerComparison: React.FC = () => {
                 <p className="text-gray-600 mb-4">Drag and drop your resume here, or click to browse</p>
                 { !resumeUploaded && (
                   <>
-                    <input 
+                <input 
                       key={resumeUploaded ? 'hidden' : 'visible'}
-                      type="file" 
-                      id="resume-upload"
+                  type="file" 
+                  id="resume-upload"
                       ref={fileInputRef}
                       style={{ display: 'none' }}
-                      accept=".pdf,.doc,.docx"
+                  accept=".pdf,.doc,.docx"
                       tabIndex={-1}
-                      onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          // Simulate file processing
-                          setTimeout(() => {
-                            setResumeUploaded(true);
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      // Simulate file processing
+                      setTimeout(() => {
+                        setResumeUploaded(true);
                             if (fileInputRef.current) fileInputRef.current.blur();
-                          }, 1500);
-                        }
-                      }}
-                    />
+                      }, 1500);
+                    }
+                  }}
+                />
                     <label htmlFor="resume-upload">
                       <span
                         className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors relative z-10 cursor-pointer"
-                      >
-                        Choose File
+                >
+                  Choose File
                       </span>
                     </label>
                   </>

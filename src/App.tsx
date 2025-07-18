@@ -31,6 +31,7 @@ function App() {
         <Route path="/admin/users" element={<UserManagement />} />
         <Route path="/admin/roles" element={<RoleLibrary />} />
         <Route path="/admin/analytics" element={<Analytics />} />
+        <Route path="/admin/profile" element={<Profile />} />
       </Routes>
     </div>
   );

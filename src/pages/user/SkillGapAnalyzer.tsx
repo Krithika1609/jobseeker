@@ -5,6 +5,7 @@ import { Upload, FileText, Linkedin, CheckCircle, XCircle, TrendingUp, BookOpen 
 const SkillGapAnalyzer: React.FC = () => {
   const [analysisComplete, setAnalysisComplete] = useState(false);
   const [uploadMethod, setUploadMethod] = useState<'resume' | 'linkedin' | 'manual'>('resume');
+  const [selectedJob, setSelectedJob] = useState<null | { title: string; company: string; match: string }>(null);
 
   const handleAnalyze = () => {
     setAnalysisComplete(true);
@@ -34,9 +35,31 @@ const SkillGapAnalyzer: React.FC = () => {
     { title: 'React Developer', company: 'WebSolutions', match: '92%' }
   ];
 
+  // Dummy job details
+  const jobDetails: Record<string, { description: string; requirements: string[]; salary: string; location: string }> = {
+    'Frontend Developer': {
+      description: 'Build modern web applications using React and TypeScript. Work with a dynamic team to create user-friendly interfaces.',
+      requirements: ['React', 'TypeScript', 'CSS', 'JavaScript'],
+      salary: '$80,000 - $100,000',
+      location: 'San Francisco, CA',
+    },
+    'Junior Full Stack Developer': {
+      description: 'Join our fast-growing startup to build scalable web applications from frontend to backend.',
+      requirements: ['Node.js', 'React', 'MongoDB', 'Express'],
+      salary: '$70,000 - $90,000',
+      location: 'New York, NY',
+    },
+    'React Developer': {
+      description: 'Develop cutting-edge e-commerce platforms using React and modern JavaScript frameworks.',
+      requirements: ['React', 'Redux', 'JavaScript', 'Git'],
+      salary: '$75,000 - $95,000',
+      location: 'Austin, TX',
+    },
+  };
+
   if (analysisComplete) {
     return (
-      <Layout>
+      <Layout role="student">
         <div className="p-8">
           <div className="max-w-6xl mx-auto">
             <div className="mb-6">
@@ -146,11 +169,41 @@ const SkillGapAnalyzer: React.FC = () => {
                     <p className="text-gray-600 text-sm mb-2">{job.company}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-blue-600">Match: {job.match}</span>
-                      <button className="text-blue-600 text-sm hover:underline">View Details</button>
+                      <button className="text-blue-600 text-sm hover:underline" onClick={() => setSelectedJob(job)}>View Details</button>
                     </div>
                   </div>
                 ))}
               </div>
+              {/* Job Details Modal */}
+              {selectedJob && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-auto">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-2xl font-semibold text-gray-900">{selectedJob.title}</h2>
+                      <button
+                        onClick={() => setSelectedJob(null)}
+                        className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div className="mb-2 text-gray-700 font-medium">{selectedJob.company}</div>
+                    <div className="mb-4 text-sm text-gray-500">{jobDetails[selectedJob.title]?.location} &bull; {jobDetails[selectedJob.title]?.salary}</div>
+                    <div className="mb-4">
+                      <h3 className="font-semibold mb-1">Description</h3>
+                      <p className="text-gray-700 text-sm">{jobDetails[selectedJob.title]?.description}</p>
+                    </div>
+                    <div className="mb-4">
+                      <h3 className="font-semibold mb-1">Requirements</h3>
+                      <ul className="list-disc list-inside text-sm text-gray-700">
+                        {jobDetails[selectedJob.title]?.requirements.map((req, i) => (
+                          <li key={i}>{req}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

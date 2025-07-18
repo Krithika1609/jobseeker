@@ -13,7 +13,8 @@ import {
   TrendingUp, 
   Users, 
   BookOpen, 
-  BarChart3 
+  BarChart3,
+  Bell
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -22,30 +23,12 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, role }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false); // Start closed on mobile, will be handled by useEffect for desktop
-  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
-
-  // Set initial sidebar state based on screen size
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        // Desktop: sidebar should be open by default
-        setSidebarOpen(true);
-      } else {
-        // Mobile: sidebar should be closed by default
-        setSidebarOpen(false);
-      }
-    };
-
-    // Set initial state
-    handleResize();
-
-    // Listen for window resize
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const isDashboard = location.pathname === '/user' || location.pathname === '/admin';
+  const [sidebarOpen, setSidebarOpen] = useState(isDashboard);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Student menu items
   const studentMenuItems = [
@@ -67,6 +50,11 @@ const Layout: React.FC<LayoutProps> = ({ children, role }) => {
 
   // Select menu items based on role
   const menuItems = role === 'student' ? studentMenuItems : adminMenuItems;
+
+  // Always sync sidebar open state to route
+  useEffect(() => {
+    setSidebarOpen(isDashboard);
+  }, [location.pathname]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -102,10 +90,8 @@ const Layout: React.FC<LayoutProps> = ({ children, role }) => {
 
   const handleMenuClick = (path: string) => {
     navigate(path);
-    // Close sidebar on mobile after navigation
-    if (window.innerWidth < 1024) {
-      setSidebarOpen(false);
-    }
+    // Always close sidebar after navigation
+    setSidebarOpen(false);
   };
 
   const handleLogout = () => {
@@ -134,33 +120,54 @@ const Layout: React.FC<LayoutProps> = ({ children, role }) => {
           </div>
         </div>
         
-        <div className="relative profile-dropdown">
-          <button
-            onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            aria-label="Profile menu"
-          >
-            <User className="h-5 w-5 text-gray-600" />
-          </button>
-          
-          {profileDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-              <button
-                onClick={() => { setProfileDropdownOpen(false); navigate('/user/profile'); }}
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
-              >
-                <User className="h-4 w-4 mr-2" />
-                My Profile
-              </button>
-              <button
-                onClick={handleLogout}
-                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </button>
-            </div>
-          )}
+        <div className="flex items-center gap-2">
+          {/* Notification Bell */}
+          <div className="relative">
+            <button
+              onClick={() => setNotificationOpen((v) => !v)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Notifications"
+            >
+              <Bell className="h-5 w-5 text-gray-600" />
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full px-1.5 py-0.5 shadow" style={{ minWidth: '20px', textAlign: 'center' }}>2</span>
+            </button>
+            {notificationOpen && (
+              <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                <div className="px-4 py-2 text-gray-900 font-semibold border-b">Notifications</div>
+                <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">Your application for Frontend Developer was viewed</div>
+                <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">New job posted: React Developer</div>
+                <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">You have 2 new messages</div>
+                <div className="px-4 py-2 text-xs text-gray-500 border-t">View all notifications</div>
+              </div>
+            )}
+          </div>
+          <div className="relative profile-dropdown">
+            <button
+              onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Profile menu"
+            >
+              <User className="h-5 w-5 text-gray-600" />
+            </button>
+            {profileDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                <button
+                  onClick={() => { setProfileDropdownOpen(false); navigate(role === 'admin' ? '/admin/profile' : '/user/profile'); }}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  My Profile
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
 

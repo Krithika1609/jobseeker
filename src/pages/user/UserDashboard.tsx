@@ -204,38 +204,20 @@ const UserDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Dashboard Cards */}
-          <div className="mb-12">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">Your Tools</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {dashboardCards.map((card) => {
-                const Icon = card.icon;
-                return (
-                  <div
-                    key={card.id}
-                    onClick={() => navigate(card.path)}
-                    className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group"
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`p-3 rounded-lg ${card.color}`}>
-                        <Icon className="h-6 w-6" />
-                      </div>
-                      <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{card.title}</h3>
-                    <p className="text-gray-600 text-sm mb-3">{card.description}</p>
-                    <div className="text-xs text-blue-600 font-medium">{card.stats}</div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
           {/* Recommended Jobs */}
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-semibold text-gray-900">Recommended Jobs</h2>
               <div className="flex items-center gap-4">
+                <select className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200">
+                  <option value="">Choose City</option>
+                  <option value="sanfrancisco">San Francisco</option>
+                  <option value="newyork">New York</option>
+                  <option value="austin">Austin</option>
+                  <option value="seattle">Seattle</option>
+                  <option value="boston">Boston</option>
+                  <option value="remote">Remote</option>
+                </select>
                 <select className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200">
                   <option value="">Choose Field</option>
                   <option value="software">Software</option>
