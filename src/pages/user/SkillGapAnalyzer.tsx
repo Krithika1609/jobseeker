@@ -1,0 +1,296 @@
+import React, { useState } from 'react';
+import Layout from '../../components/Layout';
+import { Upload, FileText, Linkedin, CheckCircle, XCircle, TrendingUp, BookOpen } from 'lucide-react';
+
+const SkillGapAnalyzer: React.FC = () => {
+  const [analysisComplete, setAnalysisComplete] = useState(false);
+  const [uploadMethod, setUploadMethod] = useState<'resume' | 'linkedin' | 'manual'>('resume');
+
+  const handleAnalyze = () => {
+    setAnalysisComplete(true);
+  };
+
+  const existingSkills = [
+    'JavaScript', 'React', 'HTML/CSS', 'Git', 'Communication', 'Problem Solving'
+  ];
+
+  const missingSkills = [
+    { skill: 'TypeScript', course: 'TypeScript Fundamentals' },
+    { skill: 'Node.js', course: 'Backend Development with Node.js' },
+    { skill: 'SQL', course: 'Database Design & SQL' },
+    { skill: 'AWS', course: 'Cloud Computing Basics' }
+  ];
+
+  const trendingSkills = [
+    { skill: 'Next.js', growth: '+45%' },
+    { skill: 'GraphQL', growth: '+38%' },
+    { skill: 'Docker', growth: '+32%' },
+    { skill: 'Kubernetes', growth: '+28%' }
+  ];
+
+  const jobRecommendations = [
+    { title: 'Frontend Developer', company: 'TechCorp', match: '89%' },
+    { title: 'Junior Full Stack Developer', company: 'StartupXYZ', match: '76%' },
+    { title: 'React Developer', company: 'WebSolutions', match: '92%' }
+  ];
+
+  if (analysisComplete) {
+    return (
+      <Layout>
+        <div className="p-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-6">
+              <button
+                onClick={() => setAnalysisComplete(false)}
+                className="mb-4 text-blue-600 hover:text-blue-700 font-medium"
+              >
+                ← Back to Upload
+              </button>
+              <h1 className="text-3xl font-bold text-gray-900">Skill Gap Analysis Results</h1>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Existing Skills */}
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex items-center mb-4">
+                  <CheckCircle className="h-6 w-6 text-green-600 mr-2" />
+                  <h2 className="text-xl font-semibold text-gray-900">Skills You Have</h2>
+                </div>
+                <div className="space-y-2">
+                  {existingSkills.map((skill, index) => (
+                    <div key={index} className="flex items-center p-3 bg-green-50 rounded-lg">
+                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                      <span className="text-green-800 font-medium">{skill}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Missing Skills */}
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex items-center mb-4">
+                  <XCircle className="h-6 w-6 text-red-600 mr-2" />
+                  <h2 className="text-xl font-semibold text-gray-900">Skills to Develop</h2>
+                </div>
+                <div className="space-y-3">
+                  {missingSkills.map((item, index) => (
+                    <div key={index} className="p-3 bg-red-50 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <span className="text-red-800 font-medium">{item.skill}</span>
+                        <BookOpen className="h-4 w-4 text-red-600" />
+                      </div>
+                      <p className="text-sm text-red-600 mt-1">Suggested: {item.course}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Skill Match Chart */}
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Skill Match for Frontend Developer</h2>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-sm text-gray-600">Technical Skills</span>
+                      <span className="text-sm font-medium">75%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-blue-600 h-2 rounded-full" style={{ width: '75%' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-sm text-gray-600">Soft Skills</span>
+                      <span className="text-sm font-medium">90%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-green-600 h-2 rounded-full" style={{ width: '90%' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-sm text-gray-600">Experience Level</span>
+                      <span className="text-sm font-medium">60%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-orange-600 h-2 rounded-full" style={{ width: '60%' }}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Trending Skills */}
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex items-center mb-4">
+                  <TrendingUp className="h-6 w-6 text-blue-600 mr-2" />
+                  <h2 className="text-xl font-semibold text-gray-900">Trending Skills</h2>
+                </div>
+                <div className="space-y-3">
+                  {trendingSkills.map((item, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                      <span className="font-medium text-blue-800">{item.skill}</span>
+                      <span className="text-sm font-bold text-green-600">{item.growth}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Job Recommendations */}
+            <div className="mt-8 bg-white rounded-xl shadow-sm p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Recommended Jobs Based on Your Skills</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {jobRecommendations.map((job, index) => (
+                  <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <h3 className="font-semibold text-gray-900 mb-1">{job.title}</h3>
+                    <p className="text-gray-600 text-sm mb-2">{job.company}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-blue-600">Match: {job.match}</span>
+                      <button className="text-blue-600 text-sm hover:underline">View Details</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout role="student">
+      <div className="p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">Skill Gap Analyzer</h1>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-8">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">Upload Your Information</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              <button
+                onClick={() => setUploadMethod('resume')}
+                className={`p-6 rounded-lg border-2 transition-colors ${
+                  uploadMethod === 'resume'
+                    ? 'border-blue-600 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <Upload className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                <h3 className="font-semibold text-gray-900 mb-1">Upload Resume</h3>
+                <p className="text-sm text-gray-600">PDF, DOC, or DOCX</p>
+              </button>
+
+              <button
+                onClick={() => setUploadMethod('linkedin')}
+                className={`p-6 rounded-lg border-2 transition-colors ${
+                  uploadMethod === 'linkedin'
+                    ? 'border-blue-600 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <Linkedin className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                <h3 className="font-semibold text-gray-900 mb-1">LinkedIn Import</h3>
+                <p className="text-sm text-gray-600">Paste LinkedIn URL</p>
+              </button>
+
+              <button
+                onClick={() => setUploadMethod('manual')}
+                className={`p-6 rounded-lg border-2 transition-colors ${
+                  uploadMethod === 'manual'
+                    ? 'border-blue-600 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <FileText className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                <h3 className="font-semibold text-gray-900 mb-1">Manual Input</h3>
+                <p className="text-sm text-gray-600">Type your skills</p>
+              </button>
+            </div>
+
+            {uploadMethod === 'resume' && (
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center relative">
+                <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Drop your resume here</h3>
+                <p className="text-gray-600 mb-4">or click to browse files</p>
+                <input 
+                  type="file" 
+                  id="resume-upload"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                  accept=".pdf,.doc,.docx"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      // Simulate file processing
+                      setTimeout(() => {
+                        setAnalysisComplete(true);
+                      }, 1500);
+                    }
+                  }}
+                />
+                <button 
+                  type="button"
+                  onClick={() => document.getElementById('resume-upload')?.click()}
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 relative z-10"
+                >
+                  Choose File
+                </button>
+                <p className="text-sm text-gray-500 mt-2">Supports PDF, DOC, DOCX</p>
+              </div>
+            )}
+
+            {uploadMethod === 'linkedin' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  LinkedIn Profile URL
+                </label>
+                <input
+                  type="url"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="https://linkedin.com/in/yourprofile"
+                />
+              </div>
+            )}
+
+            {uploadMethod === 'manual' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Your Skills (comma-separated)
+                </label>
+                <textarea
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  rows={6}
+                  placeholder="JavaScript, React, HTML, CSS, Git, Communication..."
+                />
+              </div>
+            )}
+
+            <div className="mt-8">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Target Job Role
+              </label>
+              <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option>Frontend Developer</option>
+                <option>Backend Developer</option>
+                <option>Full Stack Developer</option>
+                <option>Data Scientist</option>
+                <option>Product Manager</option>
+                <option>UX Designer</option>
+              </select>
+            </div>
+
+            <button
+              onClick={handleAnalyze}
+              className="w-full mt-8 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              Analyze Skills Gap
+            </button>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default SkillGapAnalyzer;
