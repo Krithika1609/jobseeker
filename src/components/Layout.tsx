@@ -146,6 +146,7 @@ const Layout: React.FC<LayoutProps> = ({ children, role }) => {
           {profileDropdownOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
               <button
+<<<<<<< HEAD
                 onClick={() => { setProfileDropdownOpen(false); navigate('/user/profile'); }}
                 className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
               >
@@ -153,6 +154,8 @@ const Layout: React.FC<LayoutProps> = ({ children, role }) => {
                 My Profile
               </button>
               <button
+=======
+>>>>>>> c1dfa6b6b2adff050ff9a0c10e5a694b076c403c
                 onClick={handleLogout}
                 className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
               >

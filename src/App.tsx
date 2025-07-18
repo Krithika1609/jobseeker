@@ -8,7 +8,10 @@ import ApplicationTracker from './pages/user/ApplicationTracker';
 import JobComparison from './pages/user/JobComparison';
 import PersonalGrowth from './pages/user/PersonalGrowth';
 import PeerComparison from './pages/user/PeerComparison';
+<<<<<<< HEAD
 import Profile from './pages/user/Profile';
+=======
+>>>>>>> c1dfa6b6b2adff050ff9a0c10e5a694b076c403c
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UserManagement from './pages/admin/UserManagement';
 import RoleLibrary from './pages/admin/RoleLibrary';
@@ -26,7 +29,10 @@ function App() {
         <Route path="/user/job-compare" element={<JobComparison />} />
         <Route path="/user/growth" element={<PersonalGrowth />} />
         <Route path="/user/peer-compare" element={<PeerComparison />} />
+<<<<<<< HEAD
         <Route path="/user/profile" element={<Profile />} />
+=======
+>>>>>>> c1dfa6b6b2adff050ff9a0c10e5a694b076c403c
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<UserManagement />} />
         <Route path="/admin/roles" element={<RoleLibrary />} />
