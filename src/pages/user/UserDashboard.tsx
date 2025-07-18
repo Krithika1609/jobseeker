@@ -197,14 +197,11 @@ const UserDashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           {/* Welcome Section */}
           <div className="mb-8">
-<<<<<<< HEAD
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Chinmayi!</h1>
             <p className="text-gray-600">Here's your job search dashboard. Track your progress and discover new opportunities.</p>
             <div className="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
               <span className="italic text-yellow-800 font-medium">“Success is not the key to happiness. Happiness is the key to success.”</span>
-=======
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back!</h1>
-            <p className="text-gray-600">Here's your job search dashboard. Track your progress and discover new opportunities.</p>
+            </div>
           </div>
 
           {/* Dashboard Cards */}
@@ -231,7 +228,6 @@ const UserDashboard: React.FC = () => {
                   </div>
                 );
               })}
->>>>>>> c1dfa6b6b2adff050ff9a0c10e5a694b076c403c
             </div>
           </div>
 
@@ -239,7 +235,6 @@ const UserDashboard: React.FC = () => {
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-semibold text-gray-900">Recommended Jobs</h2>
-<<<<<<< HEAD
               <div className="flex items-center gap-4">
                 <select className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200">
                   <option value="">Choose Field</option>
@@ -251,9 +246,6 @@ const UserDashboard: React.FC = () => {
                 </select>
                 <button className="text-blue-600 hover:text-blue-700 font-medium">View All</button>
               </div>
-=======
-              <button className="text-blue-600 hover:text-blue-700 font-medium">View All</button>
->>>>>>> c1dfa6b6b2adff050ff9a0c10e5a694b076c403c
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

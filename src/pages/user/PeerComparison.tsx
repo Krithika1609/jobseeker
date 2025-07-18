@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { useState, useRef, useEffect } from 'react';
-=======
-import React, { useState } from 'react';
->>>>>>> c1dfa6b6b2adff050ff9a0c10e5a694b076c403c
 import Layout from '../../components/Layout';
 import { Upload, Users, TrendingUp, Award, Target, Filter } from 'lucide-react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
@@ -28,7 +24,6 @@ const PeerComparison: React.FC = () => {
     region: 'all',
     targetRole: 'all'
   });
-<<<<<<< HEAD
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Blur file input on upload or when navigating away
@@ -40,8 +35,6 @@ const PeerComparison: React.FC = () => {
       if (fileInputRef.current) fileInputRef.current.blur();
     };
   }, [resumeUploaded]);
-=======
->>>>>>> c1dfa6b6b2adff050ff9a0c10e5a694b076c403c
 
   // Mock user skills (extracted from resume)
   const userSkills: UserSkills = {
@@ -132,14 +125,11 @@ const PeerComparison: React.FC = () => {
 
   // Calculate percentiles
   const calculatePercentile = (userScore: number, skill: string) => {
-<<<<<<< HEAD
     if (skill === 'overall') {
       const peerScores = filteredPeers.map(peer => peer.overallScore || 0);
       const lowerScores = peerScores.filter(score => score < userScore).length;
       return Math.round((lowerScores / peerScores.length) * 100);
     }
-=======
->>>>>>> c1dfa6b6b2adff050ff9a0c10e5a694b076c403c
     const peerScores = filteredPeers.map(peer => peer.skills[skill] || 0);
     const lowerScores = peerScores.filter(score => score < userScore).length;
     return Math.round((lowerScores / peerScores.length) * 100);
@@ -190,7 +180,6 @@ const PeerComparison: React.FC = () => {
                 <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Upload Your Resume</h3>
                 <p className="text-gray-600 mb-4">Drag and drop your resume here, or click to browse</p>
-<<<<<<< HEAD
                 { !resumeUploaded && (
                   <>
                     <input 
@@ -220,29 +209,6 @@ const PeerComparison: React.FC = () => {
                     </label>
                   </>
                 )}
-=======
-                <input 
-                  type="file" 
-                  id="resume-upload"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
-                  accept=".pdf,.doc,.docx"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      // Simulate file processing
-                      setTimeout(() => {
-                        setResumeUploaded(true);
-                      }, 1500);
-                    }
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => document.getElementById('resume-upload')?.click()}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors relative z-10"
-                >
-                  Choose File
-                </button>
->>>>>>> c1dfa6b6b2adff050ff9a0c10e5a694b076c403c
                 <p className="text-sm text-gray-500 mt-2">Supports PDF, DOC, DOCX</p>
               </div>
 
