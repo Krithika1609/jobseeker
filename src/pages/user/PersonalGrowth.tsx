@@ -12,6 +12,7 @@ interface MoodEntry {
 }
 
 const PersonalGrowth: React.FC = () => {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [view, setView] = useState<'timeline' | 'calendar' | 'summary'>('timeline');
   const [showMoodForm, setShowMoodForm] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -127,43 +128,56 @@ const PersonalGrowth: React.FC = () => {
   };
 
   return (
-    <Layout role="student">
-      <div className="p-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Personal Growth Tracker</h1>
-              <p className="text-gray-600 mt-1">Track your emotional journey through your job search</p>
-            </div>
-            <button
-              onClick={() => setShowMoodForm(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700 transition-colors"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Log Mood
-            </button>
+    <Layout 
+      role="student"
+      viewMode={viewMode}
+      onViewModeChange={setViewMode}
+    >
+      <div className="p-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Personal Growth Tracker</h1>
+            <p className="text-gray-600">Track your emotional journey through your job search</p>
           </div>
 
-          {/* View Toggle */}
-          <div className="mb-6 flex space-x-1 bg-white rounded-lg p-1 shadow-sm w-fit">
-            {['timeline', 'calendar', 'summary'].map((viewType) => (
+          {/* Controls */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Mood Tracking</h2>
+                <p className="text-sm text-gray-600">Log your emotional journey during job search</p>
+              </div>
               <button
-                key={viewType}
-                onClick={() => setView(viewType as any)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  view === viewType
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
+                onClick={() => setShowMoodForm(true)}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 shadow-sm hover:shadow-md flex items-center"
               >
-                {viewType.charAt(0).toUpperCase() + viewType.slice(1)}
+                <Plus className="h-4 w-4 mr-2" />
+                Log Mood
               </button>
-            ))}
+            </div>
           </div>
+
+                      {/* View Toggle */}
+            <div className="mb-6 flex space-x-1 bg-white rounded-lg p-1 shadow-sm w-fit border border-gray-200">
+              {['timeline', 'calendar', 'summary'].map((viewType) => (
+                <button
+                  key={viewType}
+                  onClick={() => setView(viewType as any)}
+                  className={`px-4 py-2 rounded-md text-sm font-medium ${
+                    view === viewType
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {viewType.charAt(0).toUpperCase() + viewType.slice(1)}
+                </button>
+              ))}
+            </div>
 
           {/* Timeline View */}
           {view === 'timeline' && (
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Timeline of Entries</h2>
               {moodEntries.length === 0 ? (
                 <div className="text-center py-12">
@@ -172,7 +186,7 @@ const PersonalGrowth: React.FC = () => {
                   <p className="text-gray-600 mb-4">Start tracking your emotional journey by logging your first mood entry</p>
                   <button
                     onClick={() => setShowMoodForm(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 shadow-sm hover:shadow-md"
                   >
                     Log Your First Mood
                   </button>
@@ -198,7 +212,7 @@ const PersonalGrowth: React.FC = () => {
                         </div>
                         <p className="text-gray-600 mb-3">{entry.reflection}</p>
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${moodIcons[entry.mood].bg} ${moodIcons[entry.mood].color}`}>
-                          {moodIcons[entry.mood].emoji} {moodIcons[entry.mood].label}
+                          {moodIcons[entry.mood].label}
                         </span>
                       </div>
                     </div>
@@ -210,7 +224,7 @@ const PersonalGrowth: React.FC = () => {
 
           {/* Calendar View */}
           {view === 'calendar' && (
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Calendar View - January 2024</h2>
               <div className="grid grid-cols-7 gap-2 mb-4">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
@@ -229,7 +243,7 @@ const PersonalGrowth: React.FC = () => {
                   return (
                     <div 
                       key={i} 
-                      className={`h-20 border border-gray-200 rounded p-2 hover:bg-gray-50 transition-colors ${
+                      className={`h-20 border border-gray-200 rounded p-2 hover:bg-gray-50 ${
                         !isCurrentMonth ? 'bg-gray-50 text-gray-400' : 'bg-white'
                       }`}
                     >
@@ -253,12 +267,12 @@ const PersonalGrowth: React.FC = () => {
           {/* Monthly Summary */}
           {view === 'summary' && (
             <div className="space-y-6">
-              <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold text-gray-900">January 2024 Summary</h2>
                   <button
                     onClick={downloadReport}
-                    className="flex items-center text-blue-600 hover:text-blue-700 bg-blue-50 px-4 py-2 rounded-lg transition-colors"
+                    className="flex items-center text-blue-600 hover:text-blue-700 bg-blue-50 px-4 py-2 rounded-lg"
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Download Report
@@ -288,7 +302,7 @@ const PersonalGrowth: React.FC = () => {
 
               {/* Mood Distribution Chart */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Mood Distribution</h3>
                   {moodDistribution.length > 0 ? (
                     <ResponsiveContainer width="100%" height={300}>
@@ -317,7 +331,7 @@ const PersonalGrowth: React.FC = () => {
                 </div>
 
                 {/* Mood Trend Chart */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Mood Trend</h3>
                   {moodTrendData.length > 0 ? (
                     <ResponsiveContainer width="100%" height={300}>
@@ -350,7 +364,7 @@ const PersonalGrowth: React.FC = () => {
               </div>
 
               {/* AI-Generated Insights */}
-              <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">AI-Generated Insights</h3>
                 {moodEntries.length > 0 ? (
                   <div className="space-y-4">
@@ -416,7 +430,7 @@ const PersonalGrowth: React.FC = () => {
                   {Object.entries(moodIcons).map(([mood, { emoji, bg, label }]) => (
                     <label key={mood} className="cursor-pointer">
                       <input type="radio" name="mood" value={mood} className="sr-only" required />
-                      <div className={`p-3 rounded-lg border-2 border-transparent hover:border-blue-300 ${bg} flex flex-col items-center transition-all duration-200 hover:scale-105`}>
+                      <div className={`p-3 rounded-lg border-2 border-transparent hover:border-blue-300 ${bg} flex flex-col items-center`}>
                         <span className="text-2xl mb-1">{emoji}</span>
                         <span className="text-xs font-medium text-center">{label}</span>
                       </div>
@@ -454,13 +468,13 @@ const PersonalGrowth: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowMoodForm(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                   Save Entry
                 </button>

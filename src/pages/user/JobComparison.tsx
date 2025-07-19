@@ -16,6 +16,7 @@ interface Job {
 }
 
 const JobComparison: React.FC = () => {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedJobs, setSelectedJobs] = useState<Job[]>([]);
   const [showJobSearch, setShowJobSearch] = useState(false);
 
@@ -84,32 +85,45 @@ const JobComparison: React.FC = () => {
   };
 
   return (
-    <Layout role="student">
-      <div className="p-8">
+    <Layout 
+      role="student"
+      viewMode={viewMode}
+      onViewModeChange={setViewMode}
+    >
+      <div className="p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Job Comparison Tool</h1>
-              <p className="text-gray-600 mt-1">Compare up to 3 job opportunities side-by-side</p>
+          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Job Comparison Tool</h1>
+            <p className="text-gray-600">Compare up to 3 job opportunities side-by-side to make better decisions</p>
+          </div>
+
+          {/* Controls */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Selected Jobs</h2>
+                <p className="text-sm text-gray-600">Compare up to 3 jobs at once</p>
+              </div>
+              <button
+                onClick={() => setShowJobSearch(true)}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 shadow-sm hover:shadow-md flex items-center"
+                disabled={selectedJobs.length >= 3}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Job ({selectedJobs.length}/3)
+              </button>
             </div>
-            <button
-              onClick={() => setShowJobSearch(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700 transition-colors"
-              disabled={selectedJobs.length >= 3}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Job ({selectedJobs.length}/3)
-            </button>
           </div>
 
           {selectedJobs.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
               <Scale className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h2 className="text-2xl font-semibold text-gray-900 mb-2">Start Comparing Jobs</h2>
               <p className="text-gray-600 mb-6">Select jobs from our database or add your own to begin comparison</p>
               <button
                 onClick={() => setShowJobSearch(true)}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 shadow-sm hover:shadow-md"
               >
                 Browse Available Jobs
               </button>
@@ -137,7 +151,7 @@ const JobComparison: React.FC = () => {
                       </div>
                       <button
                         onClick={() => removeJobFromComparison(job.id)}
-                        className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                        className="p-1 text-gray-400 hover:text-red-600"
                       >
                         <X className="h-4 w-4" />
                       </button>
@@ -192,7 +206,7 @@ const JobComparison: React.FC = () => {
                     </div>
 
                     <div className="mt-6 pt-4 border-t border-gray-200">
-                      <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                      <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 shadow-sm hover:shadow-md">
                         Apply Now
                       </button>
                     </div>
@@ -202,99 +216,49 @@ const JobComparison: React.FC = () => {
             </div>
           )}
 
-          {selectedJobs.length > 1 && (
-            <div className="mt-8 bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Comparison</h2>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Criteria</th>
-                      {selectedJobs.map(job => (
-                        <th key={job.id} className="text-left py-3 px-4 font-medium text-gray-900">
-                          {job.title}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b border-gray-100">
-                      <td className="py-3 px-4 text-gray-700">Match %</td>
-                      {selectedJobs.map(job => (
-                        <td key={job.id} className={`py-3 px-4 font-medium ${getMatchColor(job.matchPercentage)}`}>
-                          {job.matchPercentage}%
-                        </td>
-                      ))}
-                    </tr>
-                    <tr className="border-b border-gray-100">
-                      <td className="py-3 px-4 text-gray-700">Company</td>
-                      {selectedJobs.map(job => (
-                        <td key={job.id} className="py-3 px-4 text-gray-700">{job.company}</td>
-                      ))}
-                    </tr>
-                    <tr className="border-b border-gray-100">
-                      <td className="py-3 px-4 text-gray-700">Location</td>
-                      {selectedJobs.map(job => (
-                        <td key={job.id} className="py-3 px-4 text-gray-700">{job.location}</td>
-                      ))}
-                    </tr>
-                    <tr className="border-b border-gray-100">
-                      <td className="py-3 px-4 text-gray-700">Salary</td>
-                      {selectedJobs.map(job => (
-                        <td key={job.id} className="py-3 px-4 text-gray-700">{job.salary}</td>
-                      ))}
-                    </tr>
-                    <tr>
-                      <td className="py-3 px-4 text-gray-700">Experience</td>
-                      {selectedJobs.map(job => (
-                        <td key={job.id} className="py-3 px-4 text-gray-700">{job.experience}</td>
-                      ))}
-                    </tr>
-                  </tbody>
-                </table>
+          {/* Job Search Modal */}
+          {showJobSearch && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-auto">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold text-gray-900">Select Jobs to Compare</h2>
+                  <button
+                    onClick={() => setShowJobSearch(false)}
+                    className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  {availableJobs.map((job) => (
+                    <div key={job.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getMatchBgColor(job.matchPercentage)} ${getMatchColor(job.matchPercentage)} mb-2`}>
+                            <Star className="h-3 w-3 mr-1" />
+                            {job.matchPercentage}% Match
+                          </div>
+                          <h3 className="font-semibold text-gray-900 mb-1">{job.title}</h3>
+                          <p className="text-gray-600 text-sm mb-1">{job.company}</p>
+                          <p className="text-gray-500 text-sm">{job.location} • {job.salary}</p>
+                        </div>
+                                                 <button
+                           onClick={() => addJobToComparison(job)}
+                           disabled={selectedJobs.length >= 3 || selectedJobs.find(j => j.id === job.id) !== undefined}
+                           className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                         >
+                           {selectedJobs.find(j => j.id === job.id) !== undefined ? 'Added' : 'Add'}
+                         </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
         </div>
       </div>
-
-      {/* Job Search Modal */}
-      {showJobSearch && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-4xl mx-4 max-h-[80vh] overflow-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold">Select Jobs to Compare</h2>
-              <button
-                onClick={() => setShowJobSearch(false)}
-                className="p-2 text-gray-400 hover:text-gray-600"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {availableJobs
-                .filter(job => !selectedJobs.find(selected => selected.id === job.id))
-                .map(job => (
-                  <div key={job.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getMatchBgColor(job.matchPercentage)} ${getMatchColor(job.matchPercentage)} mb-2`}>
-                      {job.matchPercentage}% Match
-                    </div>
-                    <h3 className="font-semibold text-gray-900 mb-1">{job.title}</h3>
-                    <p className="text-gray-600 text-sm mb-2">{job.company} • {job.location}</p>
-                    <p className="text-gray-700 text-sm mb-3">{job.salary}</p>
-                    <button
-                      onClick={() => addJobToComparison(job)}
-                      className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      Add to Comparison
-                    </button>
-                  </div>
-                ))}
-            </div>
-          </div>
-        </div>
-      )}
     </Layout>
   );
 };

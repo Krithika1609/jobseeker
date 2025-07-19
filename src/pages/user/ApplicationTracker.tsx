@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Layout from '../../components/Layout';
-import { Plus, Calendar, Building, MapPin, MoreVertical, Filter, SortAsc, AlertCircle, X, Undo, Eye, Edit, Trash2 } from 'lucide-react';
+import { Plus, Calendar, Building, MapPin, MoreVertical, AlertCircle, X, DollarSign } from 'lucide-react';
 
 interface Application {
   id: string;
@@ -15,10 +15,11 @@ interface Application {
 }
 
 const ApplicationTracker: React.FC = () => {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAddForm, setShowAddForm] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterCompany, setFilterCompany] = useState<string>('');
-  const [filterDate, setFilterDate] = useState<string>('all');
+  const [filterDate] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('recent');
   const [showUndo, setShowUndo] = useState(false);
   const [lastRejected, setLastRejected] = useState<Application | null>(null);
@@ -97,20 +98,9 @@ const ApplicationTracker: React.FC = () => {
     Rejected: 'bg-red-100 text-red-800'
   };
 
-  const companies = Array.from(new Set(applications.map(app => app.company)));
 
-  const markAsRejected = (applicationId: string) => {
-    const app = applications.find(a => a.id === applicationId);
-    if (app) {
-      setLastRejected(app);
-      setShowUndo(true);
-      setTimeout(() => setShowUndo(false), 5000);
-      
-      setApplications(apps =>
-        apps.map(a => a.id === applicationId ? { ...a, status: 'Rejected' as const } : a)
-      );
-    }
-  };
+
+
 
   const updateStatus = (applicationId: string, newStatus: Application['status']) => {
     setApplications(apps =>
@@ -198,328 +188,265 @@ const ApplicationTracker: React.FC = () => {
     setShowAddForm(false);
   };
 
-  const filteredApplications = getFilteredAndSortedApplications();
-
-  // Calculate stats
-  const stats = {
-    Applied: applications.filter(app => app.status === 'Applied').length,
-    Interview: applications.filter(app => app.status === 'Interview').length,
-    Offer: applications.filter(app => app.status === 'Offer').length,
-    Rejected: applications.filter(app => app.status === 'Rejected').length,
+  const getNextStatus = (currentStatus: Application['status']) => {
+    const currentIndex = statusOptions.indexOf(currentStatus);
+    if (currentIndex < statusOptions.length - 1) {
+      return statusOptions[currentIndex + 1];
+    }
+    return currentStatus; // Should not happen for valid statuses
   };
 
+
+
+
+
   return (
-    <Layout role="student">
-      <div className="p-8">
+    <Layout 
+      role="student"
+      viewMode={viewMode}
+      onViewModeChange={setViewMode}
+    >
+      <div className="p-6">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Application Tracker</h1>
-              <p className="text-gray-600 mt-1">Track and manage your job applications</p>
-            </div>
-            <button
-              onClick={() => setShowAddForm(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700 transition-colors"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Application
-            </button>
+          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Application Tracker</h1>
+            <p className="text-gray-600">Track your job applications and monitor your progress</p>
           </div>
 
-          {/* Stats Summary */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            {Object.entries(stats).map(([status, count]) => (
-              <div key={status} className="bg-white p-4 border-b-4 border-blue-200">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900 mb-1">{count}</div>
-                  <div className="text-sm text-gray-600">{status}</div>
-                </div>
+          {/* Filters and Controls */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setShowAddForm(true)}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 shadow-sm hover:shadow-md flex items-center"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Application
+                </button>
               </div>
-            ))}
-          </div>
 
-          {/* Filters */}
-          <div className="bg-white p-4 mb-6 border-b border-gray-200">
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="flex items-center space-x-2">
-                <Filter className="h-4 w-4 text-gray-500" />
-                <span className="text-sm font-medium text-gray-700">Filters:</span>
-              </div>
-              
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-              >
-                <option value="all">All Status</option>
-                {statusOptions.map(status => (
-                  <option key={status} value={status}>{status}</option>
-                ))}
-              </select>
-              
-              <select
-                value={filterCompany}
-                onChange={(e) => setFilterCompany(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-              >
-                <option value="">All Companies</option>
-                {companies.map(company => (
-                  <option key={company} value={company}>{company}</option>
-                ))}
-              </select>
-              
-              <select
-                value={filterDate}
-                onChange={(e) => setFilterDate(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-              >
-                <option value="all">All Time</option>
-                <option value="7">Last 7 days</option>
-                <option value="30">Last 30 days</option>
-                <option value="90">Last 90 days</option>
-              </select>
+              <div className="flex items-center gap-4">
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="all">All Status</option>
+                  {statusOptions.map(status => (
+                    <option key={status} value={status}>{status}</option>
+                  ))}
+                </select>
 
-              <div className="flex items-center space-x-2 ml-auto">
-                <SortAsc className="h-4 w-4 text-gray-500" />
-                <span className="text-sm font-medium text-gray-700">Sort:</span>
+                <input
+                  type="text"
+                  placeholder="Filter by company..."
+                  value={filterCompany}
+                  onChange={(e) => setFilterCompany(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="recent">Recently Applied</option>
+                  <option value="recent">Most Recent</option>
                   <option value="oldest">Oldest First</option>
-                  <option value="company">Company A-Z</option>
-                  <option value="status">Status</option>
+                  <option value="company">By Company</option>
+                  <option value="status">By Status</option>
                 </select>
               </div>
             </div>
           </div>
 
-          {/* Applications List */}
-          <div className="bg-white">
-            {filteredApplications.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-gray-400 mb-4">
-                  <Building className="h-16 w-16 mx-auto" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No applications found</h3>
-                <p className="text-gray-600 mb-4">Try adjusting your filters or add your first application</p>
-                <button
-                  onClick={() => setShowAddForm(true)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Add Application
-                </button>
-              </div>
-            ) : (
-              <div className="divide-y divide-gray-200">
-                {filteredApplications.map((app) => (
-                  <div
-                    key={app.id}
-                    className="w-full p-4 bg-gray-50 hover:bg-gray-100 transition-colors duration-200 border-b border-gray-200"
-                  >
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                      {/* Left Section - Job Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-                          <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-gray-900 truncate">
-                              {app.title}
-                            </h3>
-                            <div className="flex items-center text-gray-600 mt-1">
-                              <Building className="h-4 w-4 mr-1 flex-shrink-0" />
-                              <span className="truncate">{app.company}</span>
-                            </div>
-                            <div className="flex items-center text-gray-600 mt-1">
-                              <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                              <span className="truncate">{app.location}</span>
-                            </div>
-                            {app.salary && (
-                              <div className="text-sm font-medium text-gray-700 mt-1">
-                                {app.salary}
-                              </div>
-                            )}
-                          </div>
-                          
-                          {/* Status Badge */}
-                          <div className="flex-shrink-0">
-                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusColors[app.status]}`}>
-                              {app.status}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Follow-up reminder for old applications */}
-                        {app.status === 'Applied' && isOldApplication(app.dateApplied) && (
-                          <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                            <div className="flex items-center text-orange-700 text-sm">
-                              <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />
-                              <span>No response yet. Follow up?</span>
-                            </div>
-                            <div className="mt-2 flex gap-2">
-                              <button className="text-xs bg-orange-600 text-white px-3 py-1 rounded hover:bg-orange-700 transition-colors">
-                                Send follow-up
-                              </button>
-                              <button className="text-xs bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600 transition-colors">
-                                Snooze
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Right Section - Actions */}
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 lg:flex-shrink-0">
-                        {/* Date Applied */}
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Calendar className="h-4 w-4 mr-1" />
-                          <span>{new Date(app.dateApplied).toLocaleDateString()}</span>
-                        </div>
-
-                        {/* Status Dropdown */}
-                        <select
-                          value={app.status}
-                          onChange={(e) => updateStatus(app.id, e.target.value as Application['status'])}
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm min-w-[120px]"
-                        >
-                          {statusOptions.map(status => (
-                            <option key={status} value={status}>{status}</option>
-                          ))}
-                        </select>
-
-                        {/* Mark as Rejected Button */}
-                        {app.status !== 'Rejected' && (
-                          <button
-                            onClick={() => markAsRejected(app.id)}
-                            className="px-3 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors whitespace-nowrap"
-                          >
-                            Mark as Rejected
-                          </button>
-                        )}
-
-                        {/* Action Icons */}
-                        <div className="flex items-center space-x-2">
-                          <button
-                            className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                            title="View Details"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </button>
-                          <button
-                            className="p-2 text-gray-400 hover:text-green-600 transition-colors"
-                            title="Edit"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => deleteApplication(app.id)}
-                            className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
+          {/* Applications Grid/List */}
+          <div className={viewMode === 'grid' 
+            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
+            : "space-y-4"
+          }>
+            {getFilteredAndSortedApplications().map((application) => (
+              <div key={application.id} className={`bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md ${
+                viewMode === 'list' ? 'flex items-center justify-between' : ''
+              }`}>
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-1">{application.title}</h3>
+                    <p className="text-gray-600 text-sm mb-1">{application.company}</p>
+                    <div className="flex items-center text-gray-500 text-sm">
+                      <MapPin className="h-3 w-3 mr-1" />
+                      {application.location}
                     </div>
                   </div>
-                ))}
+                  <div className="relative">
+                    <button className="p-1 text-gray-400 hover:text-gray-600 rounded">
+                      <MoreVertical className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between mb-4">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[application.status]}`}>
+                    {application.status}
+                  </span>
+                  <div className="text-sm text-gray-500">
+                    <Calendar className="h-3 w-3 inline mr-1" />
+                    {new Date(application.dateApplied).toLocaleDateString()}
+                  </div>
+                </div>
+
+                {application.salary && (
+                  <div className="text-sm text-gray-600 mb-4">
+                    <DollarSign className="h-3 w-3 inline mr-1" />
+                    {application.salary}
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => updateStatus(application.id, getNextStatus(application.status))}
+                      className="text-blue-600 text-sm hover:underline"
+                    >
+                      Update Status
+                    </button>
+                    <button
+                      onClick={() => deleteApplication(application.id)}
+                      className="text-red-600 text-sm hover:underline"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                                     {isOldApplication(application.dateApplied) && (
+                     <AlertCircle className="h-4 w-4 text-yellow-500" />
+                   )}
+                </div>
               </div>
-            )}
+            ))}
           </div>
+
+          {/* Empty State */}
+          {getFilteredAndSortedApplications().length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-gray-400 mb-4">
+                <Building className="h-12 w-12 mx-auto" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No applications found</h3>
+              <p className="text-gray-600 mb-4">Start tracking your job applications to see them here</p>
+              <button
+                onClick={() => setShowAddForm(true)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              >
+                Add Your First Application
+              </button>
+            </div>
+          )}
+
+          {/* Add Application Modal */}
+          {showAddForm && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-auto">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold text-gray-900">Add New Application</h2>
+                  <button
+                    onClick={() => setShowAddForm(false)}
+                    className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <form onSubmit={addApplication} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                    <input
+                      type="text"
+                      name="title"
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., Frontend Developer"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                    <input
+                      type="text"
+                      name="company"
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., TechCorp"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                    <input
+                      type="text"
+                      name="location"
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., San Francisco, CA"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Salary (optional)</label>
+                    <input
+                      type="text"
+                      name="salary"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., $80k - $100k"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Job URL (optional)</label>
+                    <input
+                      type="url"
+                      name="jobUrl"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="https://..."
+                    />
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+                    >
+                      Add Application
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddForm(false)}
+                      className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Undo Notification */}
+          {showUndo && (
+            <div className="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-50">
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-700">Application marked as rejected</span>
+                <button
+                  onClick={undoRejection}
+                  className="text-blue-600 text-sm font-medium hover:underline"
+                >
+                  Undo
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Undo Snackbar */}
-      {showUndo && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3 z-50">
-          <span>Application marked as rejected</span>
-          <button
-            onClick={undoRejection}
-            className="flex items-center text-blue-300 hover:text-blue-200 transition-colors"
-          >
-            <Undo className="h-4 w-4 mr-1" />
-            Undo
-          </button>
-          <button
-            onClick={() => setShowUndo(false)}
-            className="text-gray-400 hover:text-gray-200 transition-colors"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      )}
-
-      {/* Add Application Modal */}
-      {showAddForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-            <h2 className="text-xl font-semibold mb-4">Add New Application</h2>
-            <form className="space-y-4" onSubmit={addApplication}>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
-                <input
-                  name="title"
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
-                <input
-                  name="company"
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                <input
-                  name="location"
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Salary Range</label>
-                <input
-                  name="salary"
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="$70k - $90k"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Job URL</label>
-                <input
-                  name="jobUrl"
-                  type="url"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="flex space-x-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowAddForm(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Add Application
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </Layout>
   );
 };

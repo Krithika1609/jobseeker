@@ -18,6 +18,7 @@ interface UserSkills {
 }
 
 const PeerComparison: React.FC = () => {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [resumeUploaded, setResumeUploaded] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({
     college: 'all',
@@ -162,13 +163,15 @@ const PeerComparison: React.FC = () => {
   if (!resumeUploaded) {
     return (
       <Layout role="student">
-        <div className="p-8">
+        <div className="p-6">
           <div className="max-w-4xl mx-auto">
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900">Peer Resume Comparison</h1>
+            {/* Page Header */}
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Peer Resume Comparison</h1>
+              <p className="text-gray-600">Compare your skills with peers from similar backgrounds</p>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
               <Users className="h-16 w-16 text-blue-600 mx-auto mb-6" />
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">Compare Your Skills with Peers</h2>
               <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
@@ -200,21 +203,16 @@ const PeerComparison: React.FC = () => {
                     }
                   }}
                 />
-                    <label htmlFor="resume-upload">
-                      <span
-                        className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors relative z-10 cursor-pointer"
+                <button 
+                  type="button"
+                  onClick={() => document.getElementById('resume-upload')?.click()}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-sm hover:shadow-md"
                 >
                   Choose File
-                      </span>
-                    </label>
-                  </>
+                </button>
+                </>
                 )}
                 <p className="text-sm text-gray-500 mt-2">Supports PDF, DOC, DOCX</p>
-              </div>
-
-              <div className="text-sm text-gray-500 bg-gray-50 p-4 rounded-lg">
-                <p className="font-medium mb-2">🔒 Privacy Protected</p>
-                <p>Your resume is processed securely and anonymously. We only extract skill data for comparison purposes.</p>
               </div>
             </div>
           </div>
@@ -224,7 +222,11 @@ const PeerComparison: React.FC = () => {
   }
 
   return (
-    <Layout role="student">
+    <Layout 
+      role="student"
+      viewMode={viewMode}
+      onViewModeChange={setViewMode}
+    >
       <div className="p-8">
         <div className="max-w-7xl mx-auto">
           <div className="mb-6 flex items-center justify-between">

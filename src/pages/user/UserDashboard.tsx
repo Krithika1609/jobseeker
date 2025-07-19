@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../../components/Layout';
+import PageHeader from '../../components/PageHeader';
+import Stats from '../../components/Stats';
+import JobFilters from '../../components/JobFilters';
 import { 
   Brain, 
   Briefcase, 
@@ -14,7 +17,14 @@ import {
   DollarSign,
   ArrowRight,
   Clock,
-  Star
+  Star,
+  Sparkles,
+  Target,
+  CheckCircle,
+  Users as UsersIcon,
+  TrendingUp as TrendingUpIcon,
+  Briefcase as BriefcaseIcon,
+  Brain as BrainIcon
 } from 'lucide-react';
 
 interface Job {
@@ -35,6 +45,40 @@ interface Job {
 const UserDashboard: React.FC = () => {
   const navigate = useNavigate();
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState<any>(null);
+
+  const dashboardStats = [
+    {
+      title: 'Total Applications',
+      value: '24',
+      change: 12,
+      changeType: 'increase' as const,
+      icon: <BriefcaseIcon className="h-6 w-6 text-white" />
+    },
+    {
+      title: 'Interviews Scheduled',
+      value: '8',
+      change: 5,
+      changeType: 'increase' as const,
+      icon: <UsersIcon className="h-6 w-6 text-white" />
+    },
+    {
+      title: 'Skills Improved',
+      value: '6',
+      change: 2,
+      changeType: 'increase' as const,
+      icon: <BrainIcon className="h-6 w-6 text-white" />
+    },
+    {
+      title: 'Success Rate',
+      value: '85%',
+      change: 8,
+      changeType: 'increase' as const,
+      icon: <TrendingUpIcon className="h-6 w-6 text-white" />
+    }
+  ];
 
   const dashboardCards = [
     {
@@ -42,45 +86,50 @@ const UserDashboard: React.FC = () => {
       title: 'Skill Gap Analyzer',
       description: 'Identify missing skills and get personalized course recommendations',
       icon: Brain,
-      color: 'bg-blue-50 text-blue-600',
+      color: 'from-blue-500 to-cyan-500',
       path: '/user/skill-gap',
-      stats: '3 skills to improve'
+      stats: '3 skills to improve',
+      progress: 75
     },
     {
       id: 'tracker',
       title: 'Application Tracker',
       description: 'Track your job applications with visual progress boards',
       icon: Briefcase,
-      color: 'bg-green-50 text-green-600',
+      color: 'from-green-500 to-emerald-500',
       path: '/user/tracker',
-      stats: '12 applications tracked'
+      stats: '12 applications tracked',
+      progress: 60
     },
     {
       id: 'job-compare',
       title: 'Job Comparison Tool',
       description: 'Compare job opportunities side-by-side to make better decisions',
       icon: Scale,
-      color: 'bg-purple-50 text-purple-600',
+      color: 'from-purple-500 to-pink-500',
       path: '/user/job-compare',
-      stats: 'Compare up to 3 jobs'
+      stats: 'Compare up to 3 jobs',
+      progress: 90
     },
     {
       id: 'peer-compare',
       title: 'Peer Resume Comparison',
       description: 'See how your skills compare with peers in your field',
       icon: Users,
-      color: 'bg-orange-50 text-orange-600',
+      color: 'from-orange-500 to-red-500',
       path: '/user/peer-compare',
-      stats: '85th percentile'
+      stats: '85th percentile',
+      progress: 85
     },
     {
       id: 'growth',
       title: 'Personal Growth Tracker',
       description: 'Track your emotional journey through your job search',
       icon: TrendingUp,
-      color: 'bg-pink-50 text-pink-600',
+      color: 'from-pink-500 to-rose-500',
       path: '/user/growth',
-      stats: '5 mood entries this week'
+      stats: '5 mood entries this week',
+      progress: 70
     }
   ];
 
@@ -175,6 +224,15 @@ const UserDashboard: React.FC = () => {
     alert(`Applied to job ${jobId}! This would integrate with the Application Tracker.`);
   };
 
+  const handleFilterClick = () => {
+    setFilterModalOpen(true);
+  };
+
+  const handleApplyFilters = (filters: any) => {
+    setAppliedFilters(filters);
+    console.log('Applied filters:', filters);
+  };
+
   const getWorkTypeColor = (type: string) => {
     switch (type) {
       case 'Remote': return 'bg-green-100 text-green-800';
@@ -191,25 +249,247 @@ const UserDashboard: React.FC = () => {
     return 'text-red-600';
   };
 
+  // Render job listings based on view mode
+  const renderJobListings = () => {
+    if (viewMode === 'list') {
+      return (
+        <div className="space-y-4">
+          {recommendedJobs.map((job) => (
+            <div key={job.id} className="card card-hover">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="text-3xl">{job.logo}</div>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <h3 className="text-lg font-semibold text-gray-900">{job.title}</h3>
+                      <div className={`flex items-center px-2 py-1 rounded-full text-xs font-medium ${getMatchScoreColor(job.matchScore)} bg-opacity-10`}>
+                        <Star className="h-3 w-3 mr-1" />
+                        {job.matchScore}% match
+                      </div>
+                    </div>
+                    <div className="flex items-center text-gray-600 mb-2">
+                      <Building className="h-4 w-4 mr-1" />
+                      <span className="mr-4">{job.company}</span>
+                      <MapPin className="h-4 w-4 mr-1" />
+                      <span>{job.location}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getWorkTypeColor(job.workType)}`}>
+                        {job.workType}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        <DollarSign className="h-3 w-3 inline mr-1" />
+                        {job.salary}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        <Clock className="h-3 w-3 inline mr-1" />
+                        {job.postedDate}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="text-right">
+                    <div className="text-sm text-gray-500">{job.applicants} applicants</div>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {job.skills.slice(0, 2).map((skill, index) => (
+                        <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleApply(job.id)}
+                    className="btn-primary text-sm px-4 py-2"
+                  >
+                    Apply Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {recommendedJobs.map((job) => (
+          <div key={job.id} className="card card-hover">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start space-x-4">
+                <div className="text-3xl">{job.logo}</div>
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900">{job.title}</h3>
+                    <div className={`flex items-center px-2 py-1 rounded-full text-xs font-medium ${getMatchScoreColor(job.matchScore)} bg-opacity-10`}>
+                      <Star className="h-3 w-3 mr-1" />
+                      {job.matchScore}% match
+                    </div>
+                  </div>
+                  <div className="flex items-center text-gray-600 mb-2">
+                    <Building className="h-4 w-4 mr-1" />
+                    <span className="mr-4">{job.company}</span>
+                    <MapPin className="h-4 w-4 mr-1" />
+                    <span>{job.location}</span>
+                  </div>
+                  <div className="flex items-center space-x-2 mb-3">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getWorkTypeColor(job.workType)}`}>
+                      {job.workType}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      <DollarSign className="h-3 w-3 inline mr-1" />
+                      {job.salary}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-gray-600 text-sm mb-4 line-clamp-2">{job.description}</p>
+
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-2 text-sm text-gray-500">
+                <Clock className="h-4 w-4" />
+                <span>{job.postedDate}</span>
+                <span>•</span>
+                <span>{job.applicants} applicants</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex flex-wrap gap-2">
+                {job.skills.slice(0, 3).map((skill, index) => (
+                  <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                    {skill}
+                  </span>
+                ))}
+                {job.skills.length > 3 && (
+                  <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                    +{job.skills.length - 3} more
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => handleApply(job.id)}
+                className="btn-primary text-sm px-4 py-2"
+              >
+                Apply Now
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <Layout role="student">
+    <Layout 
+      role="student" 
+      viewMode={viewMode}
+      onViewModeChange={setViewMode}
+    >
+      {/* Page Header */}
+      <PageHeader
+        title="Dashboard"
+        description="Track your job search progress and discover new opportunities"
+        showSearch={true}
+        showFilter={true}
+        onFilter={handleFilterClick}
+        searchPlaceholder="Search jobs, skills, or companies..."
+      />
+
       <div className="p-8">
         <div className="max-w-7xl mx-auto">
+          {/* Stats Overview */}
+          <Stats stats={dashboardStats} columns={4} />
+
           {/* Welcome Section */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Chinmayi!</h1>
-            <p className="text-gray-600">Here's your job search dashboard. Track your progress and discover new opportunities.</p>
-            <div className="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-              <span className="italic text-yellow-800 font-medium">“Success is not the key to happiness. Happiness is the key to success.”</span>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome back, Chinmayi! 👋</h2>
+                <p className="text-gray-600">Here's your job search dashboard. Track your progress and discover new opportunities.</p>
+              </div>
+              <div className="hidden md:flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                  <Sparkles className="h-6 w-6 text-white" />
+                </div>
+                <div className="text-right">
+                  <div className="text-sm text-gray-500">AI Score</div>
+                  <div className="text-lg font-semibold text-gray-900">92%</div>
+                </div>
+              </div>
             </div>
+            
+            {/* Motivation Card */}
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-2xl p-6 mb-8">
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                  <Target className="h-6 w-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Today's Goal</h3>
+                  <p className="text-gray-700 mb-3">"Success is not the key to happiness. Happiness is the key to success."</p>
+                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <span>• Apply to 3 new positions</span>
+                    <span>• Update your skills profile</span>
+                    <span>• Review peer comparisons</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Dashboard Cards - Always Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {dashboardCards.map((card) => {
+              const Icon = card.icon;
+              return (
+                <div key={card.id} className="card card-hover cursor-pointer" onClick={() => navigate(card.path)}>
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${card.color} flex items-center justify-center`}>
+                      <Icon className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-gray-900">{card.progress}%</div>
+                      <div className="text-sm text-gray-500">Complete</div>
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{card.title}</h3>
+                  <p className="text-gray-600 text-sm mb-4">{card.description}</p>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500">{card.stats}</span>
+                    <ArrowRight className="h-4 w-4 text-gray-400" />
+                  </div>
+                  
+                  {/* Progress Bar */}
+                  <div className="mt-4">
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full bg-gradient-to-r ${card.color}`}
+                        style={{ width: `${card.progress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {/* Recommended Jobs */}
           <div>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900">Recommended Jobs</h2>
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Recommended Jobs</h2>
+                <p className="text-gray-600">Jobs tailored to your skills and preferences</p>
+              </div>
               <div className="flex items-center gap-4">
-                <select className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200">
+                
+                <select className="border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                   <option value="">Choose City</option>
                   <option value="sanfrancisco">San Francisco</option>
                   <option value="newyork">New York</option>
@@ -218,213 +498,26 @@ const UserDashboard: React.FC = () => {
                   <option value="boston">Boston</option>
                   <option value="remote">Remote</option>
                 </select>
-                <select className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200">
-                  <option value="">Choose Field</option>
-                  <option value="software">Software</option>
-                  <option value="design">Design</option>
-                  <option value="marketing">Marketing</option>
-                  <option value="finance">Finance</option>
-                  <option value="other">Other</option>
-                </select>
+
                 <button className="text-blue-600 hover:text-blue-700 font-medium">View All</button>
               </div>
             </div>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {recommendedJobs.map((job) => (
-                <div key={job.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-shadow">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-start space-x-4">
-                      <div className="text-3xl">{job.logo}</div>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <h3 className="text-lg font-semibold text-gray-900">{job.title}</h3>
-                          <div className={`flex items-center px-2 py-1 rounded-full text-xs font-medium ${getMatchScoreColor(job.matchScore)}`}>
-                            <Star className="h-3 w-3 mr-1" />
-                            {job.matchScore}% match
-                          </div>
-                        </div>
-                        <div className="flex items-center text-gray-600 mb-2">
-                          <Building className="h-4 w-4 mr-1" />
-                          <span className="mr-4">{job.company}</span>
-                          <MapPin className="h-4 w-4 mr-1" />
-                          <span>{job.location}</span>
-                        </div>
-                        <div className="flex items-center space-x-2 mb-3">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getWorkTypeColor(job.workType)}`}>
-                            {job.workType}
-                          </span>
-                          <div className="flex items-center text-sm text-green-600">
-                            <DollarSign className="h-4 w-4 mr-1" />
-                            {job.salary}
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap gap-1 mb-3">
-                          {job.skills.slice(0, 3).map((skill, index) => (
-                            <span
-                              key={index}
-                              className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
-                            >
-                              {skill}
-                            </span>
-                          ))}
-                          {job.skills.length > 3 && (
-                            <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                              +{job.skills.length - 3} more
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center text-xs text-gray-500 space-x-4">
-                          <div className="flex items-center">
-                            <Clock className="h-3 w-3 mr-1" />
-                            {job.postedDate}
-                          </div>
-                          <div>{job.applicants} applicants</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">{job.description}</p>
-
-                  <div className="flex items-center space-x-3">
-                    <button
-                      onClick={() => handleApply(job.id)}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                    >
-                      Apply Now
-                    </button>
-                    <button
-                      onClick={() => setSelectedJob(job)}
-                      className="flex items-center text-blue-600 hover:text-blue-700 font-medium"
-                    >
-                      <ExternalLink className="h-4 w-4 mr-1" />
-                      More about this role
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            {renderJobListings()}
           </div>
         </div>
       </div>
 
-      {/* Role Explainer Modal */}
-      {selectedJob && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-3xl mx-4 max-h-[90vh] overflow-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900">{selectedJob.title}</h2>
-              <button
-                onClick={() => setSelectedJob(null)}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
-              >
-                ✕
-              </button>
-            </div>
-            
-            <div className="space-y-6">
-              {/* Company Info */}
-              <div className="flex items-center space-x-4">
-                <div className="text-4xl">{selectedJob.logo}</div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{selectedJob.company}</h3>
-                  <div className="flex items-center text-gray-600 space-x-4">
-                    <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      <span>{selectedJob.location}</span>
-                    </div>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getWorkTypeColor(selectedJob.workType)}`}>
-                      {selectedJob.workType}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-green-600 mt-1">
-                    <DollarSign className="h-4 w-4 mr-1" />
-                    <span className="font-medium">{selectedJob.salary}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Job Summary */}
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-2">Job Summary</h4>
-                <p className="text-gray-600">{selectedJob.description}</p>
-              </div>
-
-              {/* Required Skills */}
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-2">Required Skills</h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedJob.skills.map((skill, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Role Explainer Video - Always Present */}
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-3">Role Explainer Video</h4>
-                <div className="bg-gray-100 rounded-lg p-8 text-center">
-                  <Play className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-600 mb-4">Watch this video to learn more about the {selectedJob.title} role</p>
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                    Play Video
-                  </button>
-                </div>
-              </div>
-
-              {/* Job Details */}
-              <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-                <div>
-                  <span className="text-sm text-gray-600">Posted:</span>
-                  <div className="font-medium">{selectedJob.postedDate}</div>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-600">Applicants:</span>
-                  <div className="font-medium">{selectedJob.applicants}</div>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-600">Match Score:</span>
-                  <div className={`font-medium ${getMatchScoreColor(selectedJob.matchScore)}`}>
-                    {selectedJob.matchScore}%
-                  </div>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-600">Work Type:</span>
-                  <div className="font-medium">{selectedJob.workType}</div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex space-x-3 pt-4">
-                <button
-                  onClick={() => {
-                    handleApply(selectedJob.id);
-                    setSelectedJob(null);
-                  }}
-                  className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                >
-                  Apply Now
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedJob(null);
-                    alert('This would show similar roles based on skills and company type');
-                  }}
-                  className="flex-1 border border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-                >
-                  Explore Similar Roles
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Job Filters Modal */}
+      <JobFilters
+        isOpen={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        onApplyFilters={handleApplyFilters}
+        viewMode={viewMode}
+        onViewModeChange={(mode) => {
+          setViewMode(mode);
+        }}
+      />
     </Layout>
   );
 };

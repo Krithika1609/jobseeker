@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '../../components/Layout';
 import { Users, BookOpen, BarChart3, TrendingUp, Calendar, Award } from 'lucide-react';
 
 const AdminDashboard: React.FC = () => {
-  return (
-    <Layout role="admin">
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+      return (
+      <Layout 
+        role="admin"
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+      >
       <div className="p-8">
           <div className="max-w-7xl mx-auto">
             <div className="mb-8">

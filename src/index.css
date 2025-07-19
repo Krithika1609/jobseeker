@@ -1,3 +1,254 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* COMPLETE TRANSITION DISABLE - BROWSER LEVEL */
+html, body {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+  transition-property: none !important;
+  transition-duration: 0s !important;
+  transition-timing-function: none !important;
+  transition-delay: 0s !important;
+  will-change: auto !important;
+}
+
+
+
+/* AGGRESSIVE TRANSITION DISABLE - MUST BE FIRST */
+* {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+  transition-property: none !important;
+  transition-duration: 0s !important;
+  transition-timing-function: none !important;
+  transition-delay: 0s !important;
+}
+
+/* Disable all CSS transitions at the browser level */
+html, body, div, span, button, a, input, textarea, select, nav, section, article, aside, header, footer, main {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+  transition-property: none !important;
+  transition-duration: 0s !important;
+  transition-timing-function: none !important;
+  transition-delay: 0s !important;
+  will-change: auto !important;
+}
+
+/* Disable all hover effects */
+*:hover {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Make all page content transitions instant */
+.flex-1, .overflow-auto, .overflow-hidden {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Disable all React Router transitions */
+[data-reactroot], [data-reactroot] * {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Target specific elements that might have transitions */
+button, div, span, a, input, textarea, select {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Disable all Tailwind transition utilities */
+.transition,
+.transition-all,
+.transition-colors,
+.transition-opacity,
+.transition-shadow,
+.transition-transform,
+.duration-75,
+.duration-100,
+.duration-150,
+.duration-200,
+.duration-300,
+.duration-500,
+.duration-700,
+.duration-1000 {
+  transition: none !important;
+  transition-duration: 0s !important;
+}
+
+/* Make sidebar width changes instant */
+.sidebar-container,
+.sidebar-container * {
+  transition: none !important;
+  transition-property: none !important;
+  transition-duration: 0s !important;
+}
+
+/* Make all width changes instant */
+.w-16, .w-80 {
+  transition: none !important;
+  transition-property: none !important;
+  transition-duration: 0s !important;
+}
+
+@layer base {
+
+  * {
+    @apply border-gray-200;
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+  
+  /* Override all transition classes */
+  .transition-all,
+  .transition-colors,
+  .transition-shadow,
+  .transition-transform,
+  .transition-opacity,
+  .transition-width,
+  .transition-height,
+  [class*="transition-"] {
+    transition: none !important;
+  }
+  
+  /* Override all duration classes */
+  .duration-75,
+  .duration-100,
+  .duration-150,
+  .duration-200,
+  .duration-300,
+  .duration-500,
+  .duration-700,
+  .duration-1000,
+  [class*="duration-"] {
+    transition-duration: 0s !important;
+  }
+  
+  /* Nuclear option - disable ALL transitions globally */
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+    transition-property: none !important;
+    transition-duration: 0s !important;
+    transition-timing-function: none !important;
+    transition-delay: 0s !important;
+  }
+  
+  /* Override Tailwind's transition utilities */
+  .transition,
+  .transition-all,
+  .transition-colors,
+  .transition-opacity,
+  .transition-shadow,
+  .transition-transform {
+    transition: none !important;
+  }
+  
+  /* Disable all hover effects that might cause transitions */
+  .hover\:shadow-md:hover,
+  .hover\:shadow-lg:hover,
+  .hover\:shadow-xl:hover,
+  .hover\:bg-gray-50:hover,
+  .hover\:bg-blue-700:hover,
+  .hover\:text-red-600:hover,
+  .hover\:text-blue-600:hover {
+    transition: none !important;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
+
+@layer components {
+  .glass-effect {
+    @apply bg-white/80 backdrop-blur-md border border-white/20;
+  }
+
+  .card-hover {
+    @apply shadow-lg;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+  }
+
+  .gradient-bg {
+    @apply bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50;
+  }
+
+  .gradient-border {
+    @apply border border-gradient-to-r from-blue-200 to-purple-200;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-gray-700 px-6 py-3 rounded-xl font-semibold border border-gray-200 hover:bg-gray-50 shadow-sm hover:shadow-md;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/80 backdrop-blur-sm;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl;
+  }
+
+  .sidebar-item {
+    @apply flex items-center space-x-3 px-4 py-3 rounded-xl text-left font-medium;
+  }
+
+  .sidebar-item.active {
+    @apply bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg;
+  }
+
+  .sidebar-item:not(.active) {
+    @apply text-gray-600 hover:bg-gray-50 hover:text-gray-900;
+  }
+}
+
+
+
+/* Line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+

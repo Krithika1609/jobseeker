@@ -15,6 +15,114 @@ import RoleLibrary from './pages/admin/RoleLibrary';
 import Analytics from './pages/admin/Analytics';
 
 function App() {
+  // Force disable transitions on every render
+  React.useEffect(() => {
+    const disableTransitions = () => {
+      // Disable all elements
+      const allElements = document.querySelectorAll('*');
+      allElements.forEach(element => {
+        (element as HTMLElement).style.setProperty('transition', 'none', 'important');
+        (element as HTMLElement).style.setProperty('animation', 'none', 'important');
+        (element as HTMLElement).style.setProperty('transform', 'none', 'important');
+        (element as HTMLElement).style.setProperty('transition-property', 'none', 'important');
+        (element as HTMLElement).style.setProperty('transition-duration', '0s', 'important');
+        (element as HTMLElement).style.setProperty('transition-timing-function', 'none', 'important');
+        (element as HTMLElement).style.setProperty('transition-delay', '0s', 'important');
+      });
+      
+      // Disable document and body
+      document.documentElement.style.setProperty('transition', 'none', 'important');
+      document.body.style.setProperty('transition', 'none', 'important');
+      document.documentElement.style.setProperty('animation', 'none', 'important');
+      document.body.style.setProperty('animation', 'none', 'important');
+      document.documentElement.style.setProperty('transform', 'none', 'important');
+      document.body.style.setProperty('transform', 'none', 'important');
+      
+      // Inject CSS
+      const style = document.createElement('style');
+      style.textContent = `
+        *, *::before, *::after {
+          transition: none !important;
+          animation: none !important;
+          transform: none !important;
+          transition-property: none !important;
+          transition-duration: 0s !important;
+          transition-timing-function: none !important;
+          transition-delay: 0s !important;
+        }
+      `;
+      document.head.appendChild(style);
+    };
+    
+    disableTransitions();
+    
+    // Also disable on every route change
+    const observer = new MutationObserver(disableTransitions);
+    observer.observe(document.body, { childList: true, subtree: true });
+    
+    return () => observer.disconnect();
+  }, []);
+  
+  // Debug: Log when App component renders
+  console.log('App component rendered');
+  
+  // Also disable transitions on every render
+  React.useEffect(() => {
+    const disableAllTransitions = () => {
+      // Disable all elements
+      const allElements = document.querySelectorAll('*');
+      allElements.forEach(element => {
+        (element as HTMLElement).style.setProperty('transition', 'none', 'important');
+        (element as HTMLElement).style.setProperty('animation', 'none', 'important');
+        (element as HTMLElement).style.setProperty('transform', 'none', 'important');
+        (element as HTMLElement).style.setProperty('transition-property', 'none', 'important');
+        (element as HTMLElement).style.setProperty('transition-duration', '0s', 'important');
+        (element as HTMLElement).style.setProperty('transition-timing-function', 'none', 'important');
+        (element as HTMLElement).style.setProperty('transition-delay', '0s', 'important');
+      });
+      
+      // Disable document and body
+      document.documentElement.style.setProperty('transition', 'none', 'important');
+      document.body.style.setProperty('transition', 'none', 'important');
+      document.documentElement.style.setProperty('animation', 'none', 'important');
+      document.body.style.setProperty('animation', 'none', 'important');
+      document.documentElement.style.setProperty('transform', 'none', 'important');
+      document.body.style.setProperty('transform', 'none', 'important');
+      
+      // Inject CSS
+      const style = document.createElement('style');
+      style.textContent = `
+        *, *::before, *::after {
+          transition: none !important;
+          animation: none !important;
+          transform: none !important;
+          transition-property: none !important;
+          transition-duration: 0s !important;
+          transition-timing-function: none !important;
+          transition-delay: 0s !important;
+        }
+      `;
+      document.head.appendChild(style);
+    };
+    
+    // Run on every render
+    disableAllTransitions();
+    
+    // Also run periodically
+    const interval = setInterval(disableAllTransitions, 100);
+    
+    // Also run on every animation frame
+    const animationFrame = () => {
+      disableAllTransitions();
+      requestAnimationFrame(animationFrame);
+    };
+    requestAnimationFrame(animationFrame);
+    
+    return () => {
+      clearInterval(interval);
+    };
+  });
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Routes>

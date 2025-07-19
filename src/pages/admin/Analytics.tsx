@@ -4,6 +4,7 @@ import { Calendar, Download, TrendingUp, Users, Briefcase, Target } from 'lucide
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Area, AreaChart } from 'recharts';
 
 const Analytics: React.FC = () => {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [timeRange, setTimeRange] = useState('30d');
 
   // Mock data for charts
@@ -65,7 +66,11 @@ const Analytics: React.FC = () => {
   };
 
   return (
-    <Layout role="admin">
+    <Layout 
+      role="admin"
+      viewMode={viewMode}
+      onViewModeChange={setViewMode}
+    >
       <div className="p-8">
           <div className="max-w-7xl mx-auto">
             <div className="mb-6 flex items-center justify-between">

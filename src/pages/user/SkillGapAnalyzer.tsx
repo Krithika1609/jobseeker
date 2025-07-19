@@ -3,6 +3,7 @@ import Layout from '../../components/Layout';
 import { Upload, FileText, Linkedin, CheckCircle, XCircle, TrendingUp, BookOpen } from 'lucide-react';
 
 const SkillGapAnalyzer: React.FC = () => {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [analysisComplete, setAnalysisComplete] = useState(false);
   const [uploadMethod, setUploadMethod] = useState<'resume' | 'linkedin' | 'manual'>('resume');
   const [selectedJob, setSelectedJob] = useState<null | { title: string; company: string; match: string }>(null);
@@ -60,21 +61,23 @@ const SkillGapAnalyzer: React.FC = () => {
   if (analysisComplete) {
     return (
       <Layout role="student">
-        <div className="p-8">
-          <div className="max-w-6xl mx-auto">
-            <div className="mb-6">
+        <div className="p-6">
+          <div className="max-w-7xl mx-auto">
+            {/* Page Header */}
+            <div className="mb-8">
               <button
                 onClick={() => setAnalysisComplete(false)}
-                className="mb-4 text-blue-600 hover:text-blue-700 font-medium"
+                className="mb-4 text-blue-600 hover:text-blue-700 font-medium flex items-center"
               >
                 ← Back to Upload
               </button>
-              <h1 className="text-3xl font-bold text-gray-900">Skill Gap Analysis Results</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Skill Gap Analysis Results</h1>
+              <p className="text-gray-600">Review your skills analysis and discover opportunities for growth</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Existing Skills */}
-              <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center mb-4">
                   <CheckCircle className="h-6 w-6 text-green-600 mr-2" />
                   <h2 className="text-xl font-semibold text-gray-900">Skills You Have</h2>
@@ -90,7 +93,7 @@ const SkillGapAnalyzer: React.FC = () => {
               </div>
 
               {/* Missing Skills */}
-              <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center mb-4">
                   <XCircle className="h-6 w-6 text-red-600 mr-2" />
                   <h2 className="text-xl font-semibold text-gray-900">Skills to Develop</h2>
@@ -109,7 +112,7 @@ const SkillGapAnalyzer: React.FC = () => {
               </div>
 
               {/* Skill Match Chart */}
-              <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Skill Match for Frontend Developer</h2>
                 <div className="space-y-4">
                   <div>
@@ -143,7 +146,7 @@ const SkillGapAnalyzer: React.FC = () => {
               </div>
 
               {/* Trending Skills */}
-              <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center mb-4">
                   <TrendingUp className="h-6 w-6 text-blue-600 mr-2" />
                   <h2 className="text-xl font-semibold text-gray-900">Trending Skills</h2>
@@ -160,11 +163,11 @@ const SkillGapAnalyzer: React.FC = () => {
             </div>
 
             {/* Job Recommendations */}
-            <div className="mt-8 bg-white rounded-xl shadow-sm p-6">
+            <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Recommended Jobs Based on Your Skills</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {jobRecommendations.map((job, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md">
                     <h3 className="font-semibold text-gray-900 mb-1">{job.title}</h3>
                     <p className="text-gray-600 text-sm mb-2">{job.company}</p>
                     <div className="flex items-center justify-between">
@@ -212,133 +215,83 @@ const SkillGapAnalyzer: React.FC = () => {
   }
 
   return (
-    <Layout role="student">
-      <div className="p-8">
+    <Layout 
+      role="student"
+      viewMode={viewMode}
+      onViewModeChange={setViewMode}
+    >
+      <div className="p-6">
         <div className="max-w-4xl mx-auto">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">Skill Gap Analyzer</h1>
+          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Skill Gap Analyzer</h1>
+            <p className="text-gray-600">Upload your resume or LinkedIn profile to analyze your skills and identify gaps</p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">Upload Your Information</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              <button
-                onClick={() => setUploadMethod('resume')}
-                className={`p-6 rounded-lg border-2 transition-colors ${
-                  uploadMethod === 'resume'
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <Upload className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                <h3 className="font-semibold text-gray-900 mb-1">Upload Resume</h3>
-                <p className="text-sm text-gray-600">PDF, DOC, or DOCX</p>
-              </button>
-
-              <button
-                onClick={() => setUploadMethod('linkedin')}
-                className={`p-6 rounded-lg border-2 transition-colors ${
-                  uploadMethod === 'linkedin'
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <Linkedin className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                <h3 className="font-semibold text-gray-900 mb-1">LinkedIn Import</h3>
-                <p className="text-sm text-gray-600">Paste LinkedIn URL</p>
-              </button>
-
-              <button
-                onClick={() => setUploadMethod('manual')}
-                className={`p-6 rounded-lg border-2 transition-colors ${
-                  uploadMethod === 'manual'
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <FileText className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                <h3 className="font-semibold text-gray-900 mb-1">Manual Input</h3>
-                <p className="text-sm text-gray-600">Type your skills</p>
-              </button>
-            </div>
-
-            {uploadMethod === 'resume' && (
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center relative">
-                <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Drop your resume here</h3>
-                <p className="text-gray-600 mb-4">or click to browse files</p>
-                <input 
-                  type="file" 
-                  id="resume-upload"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
-                  accept=".pdf,.doc,.docx"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      // Simulate file processing
-                      setTimeout(() => {
-                        setAnalysisComplete(true);
-                      }, 1500);
-                    }
-                  }}
-                />
-                <button 
-                  type="button"
-                  onClick={() => document.getElementById('resume-upload')?.click()}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 relative z-10"
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+            <div className="max-w-2xl mx-auto">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">Choose Your Upload Method</h2>
+              
+              <div className="space-y-4 mb-8">
+                <button
+                  onClick={() => setUploadMethod('resume')}
+                  className={`w-full p-4 rounded-lg border-2 ${
+                    uploadMethod === 'resume' 
+                      ? 'border-blue-500 bg-blue-50' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
                 >
-                  Choose File
+                  <div className="flex items-center">
+                    <Upload className="h-6 w-6 text-blue-600 mr-3" />
+                    <div className="text-left">
+                      <h3 className="font-semibold text-gray-900">Upload Resume</h3>
+                      <p className="text-sm text-gray-600">Upload your resume file (PDF, DOC, DOCX)</p>
+                    </div>
+                  </div>
                 </button>
-                <p className="text-sm text-gray-500 mt-2">Supports PDF, DOC, DOCX</p>
-              </div>
-            )}
 
-            {uploadMethod === 'linkedin' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  LinkedIn Profile URL
-                </label>
-                <input
-                  type="url"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://linkedin.com/in/yourprofile"
-                />
-              </div>
-            )}
+                <button
+                  onClick={() => setUploadMethod('linkedin')}
+                  className={`w-full p-4 rounded-lg border-2 ${
+                    uploadMethod === 'linkedin' 
+                      ? 'border-blue-500 bg-blue-50' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <Linkedin className="h-6 w-6 text-blue-600 mr-3" />
+                    <div className="text-left">
+                      <h3 className="font-semibold text-gray-900">Connect LinkedIn</h3>
+                      <p className="text-sm text-gray-600">Import your profile from LinkedIn</p>
+                    </div>
+                  </div>
+                </button>
 
-            {uploadMethod === 'manual' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Your Skills (comma-separated)
-                </label>
-                <textarea
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={6}
-                  placeholder="JavaScript, React, HTML, CSS, Git, Communication..."
-                />
+                <button
+                  onClick={() => setUploadMethod('manual')}
+                  className={`w-full p-4 rounded-lg border-2 ${
+                    uploadMethod === 'manual' 
+                      ? 'border-blue-500 bg-blue-50' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <FileText className="h-6 w-6 text-blue-600 mr-3" />
+                    <div className="text-left">
+                      <h3 className="font-semibold text-gray-900">Manual Entry</h3>
+                      <p className="text-sm text-gray-600">Enter your skills manually</p>
+                    </div>
+                  </div>
+                </button>
               </div>
-            )}
 
-            <div className="mt-8">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Target Job Role
-              </label>
-              <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option>Frontend Developer</option>
-                <option>Backend Developer</option>
-                <option>Full Stack Developer</option>
-                <option>Data Scientist</option>
-                <option>Product Manager</option>
-                <option>UX Designer</option>
-              </select>
+              <button
+                onClick={handleAnalyze}
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 shadow-sm hover:shadow-md"
+              >
+                Analyze My Skills
+              </button>
             </div>
-
-            <button
-              onClick={handleAnalyze}
-              className="w-full mt-8 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-            >
-              Analyze Skills Gap
-            </button>
           </div>
         </div>
       </div>
